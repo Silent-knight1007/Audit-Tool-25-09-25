@@ -1,15 +1,46 @@
 import mongoose from 'mongoose';
+import bcrypt from 'bcrypt';
 
-const userSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  avatarUrl: { type: String, default: null },
-  role: { type: String, default: 'User' },  // Added role field for frontend display
-  // Add other user-related fields as needed, e.g., password, etc.
+const UserSchema = new mongoose.Schema({
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    lowercase: true,
+    trim: true
+  },
+  name: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  role: {
+    type: String,
+    required: true,
+    enum: ["user", "admin", "auditor", "superadmin"]  // ✅ only these three roles
+  },
+  password: {
+    type: String,
+    required: true
+  },
 }, { timestamps: true });
 
-// Use model name capitalized and singular for consistency
-const user = mongoose.model('user', userSchema);
+// Hash password before saving
+UserSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) return next();
+  try {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
 
-export default user;
-// XyZ7$pQr1@9nLm
+// Compare password
+UserSchema.methods.comparePassword = async function (candidatePassword) {
+  return bcrypt.compare(candidatePassword, this.password);
+};
+
+const User = mongoose.model('User', UserSchema);
+export default User;

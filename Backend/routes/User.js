@@ -2,7 +2,7 @@ import express from 'express';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
-import User from '../models/user.js';  // Ensure this matches the filename casing (user.js or User.js)
+import User from '../models/User.js';  // Ensure this matches the filename casing (user.js or User.js)
 
 const router = express.Router();
 

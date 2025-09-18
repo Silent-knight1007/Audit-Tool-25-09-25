@@ -92,7 +92,7 @@ router.put('/:id', upload.array('attachments'), async (req, res) => {
       return res.status(404).json({ message: 'NonConformity not found' });
     }
 
-    if (userRole !== 'admin' && userRole !== 'auditor') {
+    if (userRole !== 'admin' && userRole !== 'auditor' && userRole !== 'superadmin') {
       if (nc.responsibleperson.email !== userEmail) {
         return res.status(403).json({ message: 'Forbidden: not authorized to update this NonConformity' });
       }
@@ -148,13 +148,13 @@ router.get('/', async (req, res) => {
     const { username, role } = req.query;
     if (
       typeof role !== 'string' ||
-      (role !== 'admin' && role !== 'auditor' && typeof username !== 'string')
+      (role !== 'admin' && role !== 'auditor' && role !== 'superadmin' && typeof username !== 'string')
     ) {
       return res.status(400).json({ message: 'Invalid or missing role/username query parameters' });
     }
     let filter = {};
 
-    if (role !== 'admin' && role !== 'auditor' && username) {
+    if (role !== 'admin' && role !== 'auditor' && role !== 'superadmin' && username) {
       filter = { 'responsibleperson.name': username };
     }
 
@@ -190,7 +190,7 @@ router.delete('/:id', async (req, res) => {
       return res.status(400).json({ message: 'User info missing' });
     }
 
-    if (userRole !== 'admin' && userRole !== 'auditor') {
+    if (userRole !== 'admin' && userRole !== 'auditor' && userRole !== 'superadmin') {
       return res.status(403).json({ message: 'Forbidden: only admin or auditor can delete nonconformities' });
     }
 

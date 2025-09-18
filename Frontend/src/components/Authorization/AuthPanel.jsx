@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import AuthContext from "../../Context/AuthContext";
 
@@ -16,7 +16,7 @@ export default function AuthPanel() {
   const [password, setPassword] = useState("");
   const [loginEmailError, setLoginEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
- {/* const [role, setRole] = useState("");*/}
+  {/* const [role, setRole] = useState("");*/ }
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
@@ -145,6 +145,11 @@ export default function AuthPanel() {
           >
             Sign In
           </button>
+          <div className="text-center mt-4">
+            <Link to="/forgot-password" className="text-red-600 font-bold hover:underline">
+              Forgot Password?
+            </Link>
+          </div>
         </form>
       </div>
 

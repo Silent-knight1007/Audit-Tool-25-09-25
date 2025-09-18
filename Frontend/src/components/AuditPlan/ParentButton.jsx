@@ -2,15 +2,15 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import AuditTable from "./AuditPlanTable";
-import DeleteAuditButton from "./DeleteAuditPlanButton"; // ✅ make sure this matches actual file name
+import DeleteAuditButton from "./DeleteAuditPlanButton"; 
 import axios from "axios";
 
 export default function ParentButton() {
   const [selectedIds, setSelectedIds] = useState([]);
   const [audits, setAudits] = useState([]);
+  const [search, setSearch] = useState(""); // 🔍 search state
 
   const handleDeleteSelected = async (ids = selectedIds) => {
-    // ✅ Ensure ids is always an array
     if (!Array.isArray(ids)) {
       ids = selectedIds;
     }
@@ -39,8 +39,6 @@ export default function ParentButton() {
           ? response.data.deletedIds
           : ids;
 
-      console.log("Deleted IDs from backend or fallback:", deletedIds);
-
       setAudits(prevAudits =>
         prevAudits.filter(a => !deletedIds.includes(a._id))
       );
@@ -54,22 +52,14 @@ export default function ParentButton() {
       alert("Error deleting audits");
     }
   };
+  
 
   const fetchAudits = async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:5000/api/AuditPlan"
-      );
+      const response = await axios.get("http://localhost:5000/api/AuditPlan");
       setAudits(response.data);
     } catch (error) {
       console.error("Error fetching audits:", error.message);
-      if (error.response) {
-        console.error("Response:", error.response.data);
-      } else if (error.request) {
-        console.error("No response received:", error.request);
-      } else {
-        console.error("Axios config error:", error.config);
-      }
     }
   };
 
@@ -77,28 +67,71 @@ export default function ParentButton() {
     fetchAudits();
   }, []);
 
+  // 🔍 Filter audits by search (checks all fields)
+  const filteredAudits = audits.filter((audit) => {
+    const searchLower = search.toLowerCase();
+
+    // Convert audit object into a searchable string
+    const auditString = Object.values(audit)
+      .map((val) => {
+        if (!val) return "";
+        if (typeof val === "string") return val.toLowerCase();
+        if (typeof val === "number") return val.toString();
+        if (val instanceof Date) return val.toLocaleDateString().toLowerCase();
+        if (Array.isArray(val)) {
+          return val
+            .map((item) =>
+              typeof item === "object"
+                ? JSON.stringify(item).toLowerCase()
+                : String(item).toLowerCase()
+            )
+            .join(" ");
+        }
+        if (typeof val === "object") {
+          return JSON.stringify(val).toLowerCase();
+        }
+        return "";
+      })
+      .join(" ");
+
+    return auditString.includes(searchLower);
+  });
+
   return (
     <div className="p-4">
-        <h1 className="mb-8 font-bold text-xl ml-2">Audit Records</h1>
-      {/* Buttons Row */}
-      <div className="flex gap-x-2 mb-2">
-        <Link to="/xyz">
-          <button className="bg-red-500 hover:bg-orange-600 text-white ml-1 font-bold text-xs py-2 px-7 rounded-lg">
-            Add
-          </button>
-        </Link>
+      <h1 className="mb-8 font-bold text-xl ml-2">Audit Records</h1>
 
-        <DeleteAuditButton
-          onDelete={() => handleDeleteSelected()}
-          disabled={selectedIds.length === 0}
+      {/* 🔍 Search + Buttons Row */}
+      <div className="flex justify-between items-center mb-2">
+        {/* Search bar */}
+        <input
+          type="text"
+          placeholder="Search audits..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-1/3"
         />
+
+        {/* Buttons */}
+        <div className="flex gap-x-2">
+          <Link to="/xyz">
+            <button className="bg-red-500 hover:bg-orange-600 text-white font-bold text-xs py-2 px-7 rounded-lg">
+              Add
+            </button>
+          </Link>
+
+          <DeleteAuditButton
+            onDelete={() => handleDeleteSelected()}
+            disabled={selectedIds.length === 0}
+          />
+        </div>
       </div>
 
       {/* Table */}
       <AuditTable
         selectedIds={selectedIds}
         setSelectedIds={setSelectedIds}
-        audits={audits}
+        audits={filteredAudits} 
         setAudits={setAudits}
       />
     </div>

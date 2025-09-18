@@ -10,8 +10,8 @@ export default function ParentNCButton() {
   const { user, loading } = useContext(AuthContext);
   const userRole = user?.role;
   const [isDeleting, setIsDeleting] = useState(false);
+  const [search, setSearch] = useState(""); // 🔍 search state
 
-  // Show loading UI until user data is ready
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -36,11 +36,9 @@ export default function ParentNCButton() {
     fetchNonConformities();
   }, []);
 
-  // Delete selected nonconformities one by one with user info in headers
+  // Delete selected
   const handleDeleteSelected = async (ids = selectedIds) => {
-    if (!Array.isArray(ids)) {
-      ids = selectedIds;
-    }
+    if (!Array.isArray(ids)) ids = selectedIds;
     if (ids.length === 0) return;
 
     if (!window.confirm("Are you sure you want to delete selected items?")) return;
@@ -49,21 +47,19 @@ export default function ParentNCButton() {
       return;
     }
     setIsDeleting(true);
-    try {
-      console.log('Deleting IDs:', ids);
-      console.log('User role:', userRole);
-      console.log('User ID:', user?.id);
 
-      await Promise.all(ids.map(id => axios.delete(`http://localhost:5000/api/NonConformity/${id}`, {
-        headers: {
-          'x-user-role': userRole,
-          'x-user-id': user.id,
-        }
-      })));
+    try {
+      await Promise.all(ids.map(id =>
+        axios.delete(`http://localhost:5000/api/NonConformity/${id}`, {
+          headers: {
+            'x-user-role': userRole,
+            'x-user-id': user.id,
+          }
+        })
+      ));
 
       setNc(prev => prev.filter(item => !ids.includes(item._id)));
       setSelectedIds(prev => prev.filter(id => !ids.includes(id)));
-
       alert("Deleted successfully.");
     } catch (error) {
       console.error("Error deleting NonConformity:", error);
@@ -73,12 +69,49 @@ export default function ParentNCButton() {
     }
   };
 
+  // 🔍 Filter NC records by search across all fields
+  const filteredNc = nc.filter((item) => {
+    const searchLower = search.toLowerCase();
+    const itemString = Object.values(item)
+      .map((val) => {
+        if (!val) return "";
+        if (typeof val === "string") return val.toLowerCase();
+        if (typeof val === "number") return val.toString();
+        if (val instanceof Date) return val.toLocaleDateString().toLowerCase();
+        if (Array.isArray(val)) {
+          return val
+            .map(v =>
+              typeof v === "object"
+                ? JSON.stringify(v).toLowerCase()
+                : String(v).toLowerCase()
+            )
+            .join(" ");
+        }
+        if (typeof val === "object") return JSON.stringify(val).toLowerCase();
+        return "";
+      })
+      .join(" ");
+
+    return itemString.includes(searchLower);
+  });
+
   return (
     <div className="p-4">
       <h1 className="mb-8 font-bold text-xl ml-2">Non-Conformity Records</h1>
-      {/* Buttons Row */}
-      <div className="flex gap-x-2 mb-4">
-        {(userRole === 'admin' || userRole === 'auditor') && (
+
+      {/* 🔍 Search + Buttons Row */}
+      <div className="flex justify-between items-center mb-4">
+        {/* Search input */}
+        <input
+          type="text"
+          placeholder="Search non-conformities..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-1/3"
+        />
+
+        {/* Delete button */}
+        {(userRole === 'admin' || userRole === 'auditor' || userRole === 'superadmin') && (
           <DeleteNonConformityButton
             onDelete={() => handleDeleteSelected()}
             selectedIds={selectedIds}
@@ -87,9 +120,10 @@ export default function ParentNCButton() {
           />
         )}
       </div>
-      {/* Table with props */}
+
+      {/* Table */}
       <NonConformityTable
-        nc={nc}
+        nc={filteredNc}
         selectedIds={selectedIds}
         setSelectedIds={setSelectedIds}
         userRole={userRole}

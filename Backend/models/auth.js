@@ -1,46 +1,40 @@
-import mongoose from 'mongoose';
-import bcrypt from 'bcrypt';
+import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
 
-const UserSchema = new mongoose.Schema({
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    lowercase: true,
-    trim: true
+const userSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true,
+    },
+    password: { type: String, required: true },
+    role: {
+      type: String,
+      enum: ["user", "admin", "auditor", "superadmin"],
+      default: "user",
+    },
+    avatarUrl: { type: String, default: null }, // optional for frontend
   },
-  name: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  role:{
-    type:String,
-    required: true,
-    unique:false,
-  },
-  password: {
-    type: String,
-    required: true
-  },
-}, { timestamps: true });
+  { timestamps: true }
+);
 
-// Middleware: hash password before saving
-UserSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) return next();
-  try {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-    next();
-  } catch (err) {
-    next(err);
-  }
+// ✅ Hash password before saving
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+  this.password = await bcrypt.hash(this.password, 10);
+  next();
 });
 
-// Instance method to compare password
-UserSchema.methods.comparePassword = async function(candidatePassword) {
-  return bcrypt.compare(candidatePassword, this.password);
+// ✅ Compare passwords
+userSchema.methods.comparePassword = async function (candidate) {
+  return bcrypt.compare(candidate, this.password);
 };
 
-const User = mongoose.model('User', UserSchema);
+// ✅ Prevent OverwriteModelError when hot-reloading
+const User = mongoose.models.User || mongoose.model("User", userSchema);
+
 export default User;

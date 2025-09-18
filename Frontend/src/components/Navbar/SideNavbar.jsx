@@ -144,6 +144,21 @@ export default function SidebarNavbar({ open, onClose }) {
               </ul>
             )}
           </li>
+          {user?.role !== "user" && (
+          <li>
+            <NavLink
+              to="/user-management"
+              className={({ isActive }) =>
+                `block px-4 py-2 rounded transition-colors duration-200 ${
+                  isActive ? "bg-orange-100 text-orange-700 font-bold" : "text-gray-700 hover:bg-orange-50"
+                }`
+              }
+              onClick={onClose}
+            >
+              User Management
+            </NavLink>
+          </li>
+          )}
         </ul>
       </nav>
     </>
