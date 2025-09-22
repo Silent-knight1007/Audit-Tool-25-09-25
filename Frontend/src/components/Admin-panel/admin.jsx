@@ -17,7 +17,7 @@ function AdminPanel() {
 
   // Pagination
   const [page, setPage] = useState(1);
-  const usersPerPage = 5;
+  const usersPerPage = 50;
 
   // Fetch all users
   const fetchUsers = async () => {
@@ -240,12 +240,6 @@ function AdminPanel() {
                     <td className="border p-2">{user.email}</td>
                     <td className="border p-2 capitalize">{user.role}</td>
                     <td className="border p-2 flex gap-2 justify-center">
-                      <button
-                        onClick={() => setViewUser(user)}
-                        className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 text-sm"
-                      >
-                        View
-                      </button>
                       <button
                         onClick={() => setEditUser(user)}
                         className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"

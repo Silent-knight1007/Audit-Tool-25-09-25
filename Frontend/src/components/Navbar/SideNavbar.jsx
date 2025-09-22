@@ -10,21 +10,18 @@ export default function SidebarNavbar({ open, onClose }) {
     setIsOrgDocsOpen(prev => !prev);
   };
 
-  if (!open) {
-    return null; // Hide sidebar entirely if not open
-  }
   return (
     <>
-      {/* Overlay */}
+      {/* Overlay
       <div
-        className={`fixed inset-0 bg-black bg-opacity-30 z-40`}
-        onClick={onClose}
-      />
+        className={`fixed inset-0 bg-black bg-opacity-30 z-40 transition-opacity duration-300 ${open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+        // onClick={onClose}
+      /> */}
       
       {/* Sidebar */}
       <nav
-        className="fixed top-0 left-0 h-full w-64 bg-white shadow-lg z-50 transform transition-transform duration-300 translate-x-0"
-      >
+        className={`h-full bg-white shadow-lg z-40 transition-all duration-300 ${open ? 'w-64' : 'w-0 overflow-hidden'}`}
+      >     
         {/* Close button */}
         <button
           className="absolute top-4 right-4 text-gray-500 lg:hidden"
@@ -46,7 +43,7 @@ export default function SidebarNavbar({ open, onClose }) {
                   isActive ? "bg-orange-100 text-orange-700 font-bold" : "text-gray-700 hover:bg-orange-50"
                 }`
               }
-              onClick={onClose}
+              // onClick={onClose}
             >
               Home
             </NavLink>
@@ -63,7 +60,7 @@ export default function SidebarNavbar({ open, onClose }) {
             isActive ? "bg-orange-100 text-orange-700 font-bold" : "text-gray-700 hover:bg-orange-50"
           }`
         }
-        onClick={onClose}
+        // onClick={onClose}
       >
         Dashboard
       </NavLink>
@@ -77,7 +74,7 @@ export default function SidebarNavbar({ open, onClose }) {
               isActive ? "bg-orange-100 text-orange-700 font-bold" : "text-gray-700 hover:bg-orange-50"
             }`
           }
-          onClick={onClose}
+          // onClick={onClose}
         >
           Audit Plan
         </NavLink>
@@ -91,7 +88,7 @@ export default function SidebarNavbar({ open, onClose }) {
             isActive ? "bg-orange-100 text-orange-700 font-bold" : "text-gray-700 hover:bg-orange-50"
           }`
         }
-        onClick={onClose}
+        // onClick={onClose}
       >
         Non-Conformity
       </NavLink>
@@ -135,7 +132,7 @@ export default function SidebarNavbar({ open, onClose }) {
                           isActive ? "bg-orange-100 text-orange-700 font-bold" : "hover:bg-orange-50"
                         }`
                       }
-                      onClick={onClose}
+                      // onClick={onClose}
                     >
                       {subLink.label}
                     </NavLink>
@@ -153,7 +150,7 @@ export default function SidebarNavbar({ open, onClose }) {
                   isActive ? "bg-orange-100 text-orange-700 font-bold" : "text-gray-700 hover:bg-orange-50"
                 }`
               }
-              onClick={onClose}
+              // onClick={onClose}
             >
               User Management
             </NavLink>

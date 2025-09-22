@@ -57,9 +57,8 @@ router.post("/signin", async (req, res) => {
   }
 });
 
-//
 // ========== SIGNUP ==========
-//
+
 router.post("/signup", async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
@@ -87,9 +86,8 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-//
 // ========== RESET PASSWORD ==========
-//
+
 router.post("/reset-password", async (req, res) => {
   try {
     const { email, oldPassword, newPassword, confirmNewPassword } = req.body;
@@ -99,8 +97,8 @@ router.post("/reset-password", async (req, res) => {
     if (newPassword !== confirmNewPassword)
       return res.status(400).json({ message: "New passwords do not match." });
 
-    if (email === SUPERADMIN.email)
-      return res.status(403).json({ message: "Superadmin password cannot be reset." });
+    // if (email === SUPERADMIN.email)
+    //   return res.status(403).json({ message: "Superadmin password cannot be reset." });
 
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ message: "User not found." });

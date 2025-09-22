@@ -17,7 +17,7 @@ const NonConformityTable = ({ nc, selectedIds, setSelectedIds, userRole }) => {
         <table className="min-w-full table-auto border-collapse border border-red-500 text-xs">
           <thead className="bg-red-500">
             <tr>
-              {userRole !== 'user' && (
+              
                 <th className="border p-2 sticky top-0 bg-red-500 z-10">
                   <input
                     type="checkbox"
@@ -31,7 +31,7 @@ const NonConformityTable = ({ nc, selectedIds, setSelectedIds, userRole }) => {
                     }}
                   />
                 </th>
-              )}
+              
               <th className="border p-2 text-white sticky top-0 bg-red-500 z-10">NC ID</th>
               <th className="border p-2 text-white sticky top-0 bg-red-500 z-10">Description</th>
               <th className="border p-2 text-white sticky top-0 bg-red-500 z-10">Clause No</th>
@@ -47,7 +47,7 @@ const NonConformityTable = ({ nc, selectedIds, setSelectedIds, userRole }) => {
           <tbody>
             {nc.map(ncItem => (
               <tr key={ncItem._id}>
-                {userRole !== 'user' && (
+              
                   <td className="border p-2">
                     <input
                       type="checkbox"
@@ -61,7 +61,7 @@ const NonConformityTable = ({ nc, selectedIds, setSelectedIds, userRole }) => {
                       }}
                     />
                   </td>
-                )}
+              
                 <td className="border p-2">
                   <button
                     className="text-blue-900 underline"

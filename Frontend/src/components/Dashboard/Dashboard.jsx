@@ -31,18 +31,19 @@ const CATEGORY_COLORS = {
 };
 
 const DEPARTMENTS = [
-  "Human Resource",
+  "Human Resources",
+  "Administration",
   "Information Technology",
   "Security and Compliance",
-  "Technical Support - Operations",
-  "Technical Support Telco and Routing",
-  "Business and Growth Govt Sales",
-  "Business and Growth Enterprise Sales",
-  "Business and Growth International Sales",
-  "Finance Account",
-  "Finance Legal",
-  "Finance Revenue Assurance",
-  "Product Management",
+  "Technical Support",
+  "Telco and Routing",
+  "Business and Growth - Govt Sales",
+  "Business and Growth - Enterprise Sales",
+  "Business and Growth - Global Sales",
+  "Finance and Legal Compliances",
+  "Product",
+  "Research and Development",
+  "Carrier and Legal",
   "Research and Development",
 ];
 
@@ -183,7 +184,10 @@ useEffect(() => {
     return;
   }
   const filteredOpen = nonconformities.filter(
-    (nc) => (nc.ncstatus || "").toLowerCase().trim() === "open"
+    (nc) => (nc.ncstatus || "").toLowerCase().trim() === "open" &&
+      (openNcDropdown === "all" 
+        ? true
+        : String(nc.reportingDate ? new Date(nc.reportingDate).getFullYear() : nc.year) === openNcDropdown)
   );
   const counts = { minor: 0, major: 0, observation: 0 };
   filteredOpen.forEach((nc) => {
@@ -210,7 +214,11 @@ useEffect(() => {
     return;
   }
   const filteredClosed = nonconformities.filter(
-    (nc) => (nc.ncstatus || "").toLowerCase().trim() === "closed"
+    (nc) => (nc.ncstatus || "").toLowerCase().trim() === "closed" &&
+      (closedNcDropdown === "all"
+        ? true
+        : String(nc.reportingDate ? new Date(nc.reportingDate).getFullYear() : nc.year) === closedNcDropdown)
+
   );
   const counts = { minor: 0, major: 0, observation: 0 };
   filteredClosed.forEach((nc) => {
@@ -579,7 +587,7 @@ useEffect(() => {
                   <motion.h2 className="text-2xl font-semibold">Open Non-Conformities</motion.h2>
                   <select className="border rounded px-2 py-1 text-sm min-w-0 max-w-[120px]" value={openNcDropdown} onChange={(e) => setOpenNcDropdown(e.target.value)} aria-label="Filter Open Nonconformities">
                     <option value="all">All Years</option>
-                    {openNcYears.map((year) => (
+                    {deptOpenNcYears.map((year) => (
                       <option key={year} value={year}>{year}</option>
                     ))}
                   </select>
@@ -616,7 +624,7 @@ useEffect(() => {
                   <motion.h2 className="text-2xl font-semibold">Closed Non-Conformities</motion.h2>
                   <select className="border rounded px-2 py-1 text-sm min-w-0 max-w-[120px]" value={closedNcDropdown} onChange={(e) => setClosedNcDropdown(e.target.value)} aria-label="Filter Closed Nonconformities">
                     <option value="all">All Years</option>
-                    {closedNcYears.map((year) => (
+                    {closedDeptYears.map((year) => (
                       <option key={year} value={year}>{year}</option>
                     ))}
                   </select>

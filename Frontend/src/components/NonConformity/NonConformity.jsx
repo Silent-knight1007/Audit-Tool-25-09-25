@@ -476,18 +476,19 @@ export default function NonConformity() {
                                             Department
                                         </option>
                                         <option value="Human Resource">Human Resource</option>
+                                        <option value="Administration">Administration</option>
                                         <option value="Information Technology">Information Technology</option>
                                         <option value="Security and Compliance">Security and Compliance</option>
-                                        <option value="Technical Support - Operations">Technical Support - Operations</option>
-                                        <option value="Technical Support Telco and Routing">Technical Support Telco and Routing</option>
-                                        <option value="Business and Growth Govt Sales">Business and Growth Govt Sales</option>
-                                        <option value="Business and Growth Enterprise Sales">Business and Growth Enterprise Sales</option>
-                                        <option value="Business and Growth International Sales">Business and Growth International Sales</option>
-                                        <option value="Finance Account">Finance Account</option>
-                                        <option value="Finance Legal">Finance Legal</option>
-                                        <option value="Finance Revenue Assurance">Finance Revenue Assurance</option>
-                                        <option value="Product Management">Product Management</option>
+                                        <option value="Technical Support">Technical Support</option>
+                                        <option value="Telco and Routing">Telco and Routing</option>
+                                        <option value="Business and Growth - Govt Sales">Business and Growth - Govt Sales</option>
+                                        <option value="Business and Growth - Enterprise Sales">Business and Growth - Enterprise Sales</option>
+                                        <option value="Business and Growth  - Global Sales">Business and Growth -Global Sales</option>
+                                        <option value="Finance and Legal Compliances">Finance and Legal Compliances</option>
+                                        <option value="Product">Product</option>
                                         <option value="Research and Development">Research and Development</option>
+                                        <option value="Carrier and Legal">Carrier and Legal</option>
+                                        <option value="International Business Operations">International Business Operations</option>
                                     </select>
                                 </div>
 

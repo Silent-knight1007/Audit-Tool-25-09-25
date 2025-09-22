@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const ProfileDropdown = ({ user, onLogout }) => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -16,16 +17,35 @@ const ProfileDropdown = ({ user, onLogout }) => {
     console.log("ProfileDropdown user:", user);
   }, [user]);
 
-  const initials = user.name
-    ? user.name.split(' ').map(namePart => namePart[0]).join('').toUpperCase()
-    : 'U';
+  // Helper: Capitalize initials and remove dot
+  const formatName = (name) => {
+    if (!name) return 'User';
+    // Replace dots with spaces, then capitalize each word
+    return name
+      .replace(/\./g, ' ')  // Replace . with space
+      .split(' ')
+      .filter(Boolean)      // Remove empty strings
+      .map(
+        part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase()
+      )
+      .join(' ');
+  };
+
+  const formattedName = formatName(user?.name);
+
+  // Create initials from formattedName
+  const initials = formattedName
+    .split(' ')
+    .map(word => word[0])
+    .join('')
+    .toUpperCase();
 
   return (
     <div className="relative inline-block text-left" ref={dropdownRef}>
       <button
         onClick={() => setMenuOpen(!menuOpen)}
         className="flex items-center justify-center w-8 h-8 rounded-full bg-orange-400 text-white font-bold"
-        title={user.name}
+        title={formattedName}
         aria-haspopup="true"
         aria-expanded={menuOpen}
       >
@@ -35,9 +55,8 @@ const ProfileDropdown = ({ user, onLogout }) => {
       {menuOpen && (
         <div className="absolute right-0 top-full mt-2 w-52 bg-white rounded shadow-lg z-50 border p-3">
           <div className="p-2 border-b font-semibold">
-            {user.name} ({user.role})
+            {formattedName} ({user.role})
           </div>
-
           <button
             className="block w-full text-left p-2 hover:bg-orange-100 rounded mt-2"
             onClick={() => {
@@ -47,7 +66,6 @@ const ProfileDropdown = ({ user, onLogout }) => {
           >
             Reset Password
           </button>
-
           <button
             className="block w-full text-left p-2 text-red-700 hover:bg-orange-50 rounded mt-1"
             onClick={() => {
@@ -63,3 +81,71 @@ const ProfileDropdown = ({ user, onLogout }) => {
 };
 
 export default ProfileDropdown;
+
+
+
+// import React, { useState, useEffect, useRef } from 'react';
+
+// const ProfileDropdown = ({ user, onLogout }) => {
+//   const [menuOpen, setMenuOpen] = useState(false);
+//   const navigate = useNavigate();
+//   const dropdownRef = useRef(null);
+
+//   useEffect(() => {
+//     const handleClickOutside = (event) => {
+//       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+//         setMenuOpen(false);
+//       }
+//     };
+//     document.addEventListener('mousedown', handleClickOutside);
+//     return () => document.removeEventListener('mousedown', handleClickOutside);
+//     console.log("ProfileDropdown user:", user);
+//   }, [user]);
+
+//   const initials = user.name
+//     ? user.name.split(' ').map(namePart => namePart[0]).join('').toUpperCase()
+//     : 'U';
+
+//   return (
+//     <div className="relative inline-block text-left" ref={dropdownRef}>
+//       <button
+//         onClick={() => setMenuOpen(!menuOpen)}
+//         className="flex items-center justify-center w-8 h-8 rounded-full bg-orange-400 text-white font-bold"
+//         title={user.name}
+//         aria-haspopup="true"
+//         aria-expanded={menuOpen}
+//       >
+//         {initials}
+//       </button>
+
+//       {menuOpen && (
+//         <div className="absolute right-0 top-full mt-2 w-52 bg-white rounded shadow-lg z-50 border p-3">
+//           <div className="p-2 border-b font-semibold">
+//             {user.name} ({user.role})
+//           </div>
+
+//           <button
+//             className="block w-full text-left p-2 hover:bg-orange-100 rounded mt-2"
+//             onClick={() => {
+//               setMenuOpen(false);
+//               navigate('/profile/reset-password');
+//             }}
+//           >
+//             Reset Password
+//           </button>
+
+//           <button
+//             className="block w-full text-left p-2 text-red-700 hover:bg-orange-50 rounded mt-1"
+//             onClick={() => {
+//               setMenuOpen(false);
+//               onLogout();
+//             }}>
+//             Sign Out
+//           </button>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default ProfileDropdown;

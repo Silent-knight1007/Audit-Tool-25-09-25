@@ -228,6 +228,7 @@
     "negotiator": "^1.0.0",
     "node-releases": "^2.0.18",
     "nodemailer": "^7.0.5",
+    "nodemon": "^3.1.10",
     "normalize-path": "^3.0.0",
     "normalize-range": "^0.1.2",
     "object-assign": "^4.1.1",
@@ -371,5 +372,4 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon Server.js"
   }
-
 }
