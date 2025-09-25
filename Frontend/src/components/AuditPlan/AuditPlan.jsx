@@ -19,7 +19,7 @@ export default function AuditPlan() {
   const [selectedAuditTeam, setSelectedAuditTeam] = useState([]);
   const [leadAuditor, setLeadAuditor] = useState('');
   const [plannedDate, setPlannedDate] = useState('');
-  const [status, setStatus] = useState('');
+  const [status, setStatus] = useState('Planned');
   const [actualDate, setActualDate] = useState('');
   const [completeDate,setCompleteDate] = useState('');
   const [criteria, setCriteria] = useState('');
@@ -85,7 +85,7 @@ export default function AuditPlan() {
           setLeadAuditor(data.leadAuditor || '');
           setSelectedAuditTeam(data.auditTeam || []);
           setPlannedDate(data.plannedDate ? data.plannedDate.slice(0,10) : '');
-          setStatus(data.status || '');
+          setStatus(data.status || 'Planned');
           setActualDate(data.actualDate ? data.actualDate.slice(0,10) : '');
           setCompleteDate(data.completeDate ? data.completeDate.slice(0,10) : '');
           setCriteria(data.criteria || '');
@@ -118,7 +118,7 @@ export default function AuditPlan() {
       setLeadAuditor('');
       setSelectedAuditTeam([]);
       setPlannedDate('');
-      setStatus('');
+      setStatus('Planned');
       setActualDate('');
       setCompleteDate('');
       setCriteria('');
@@ -135,11 +135,12 @@ export default function AuditPlan() {
     { value: "Dubai", label: "Dubai" },
     { value: "Singapore", label: "Singapore" },
     { value: "Gurgaon", label: "Gurgaon" },
+    { value: "Mumbai", label: "Mumbai" },
   ];
 
   const standardOptions = [
     { value: "ISO 9001 : 2015", label: "ISO 9001 : 2015" },
-    { value: "ISO 27001 : 2023", label: "ISO 27001 : 2023" },
+    { value: "ISO 27001 : 2022", label: "ISO 27001 : 2022" },
     { value: "ISO 27701 : 2019", label: "ISO 27701 : 2019" },
     { value: "ISO 22301 : 2019", label: "ISO 22301 : 2019" },
     { value: "ISO 27017 : 2015", label: "ISO 27017 : 2015" },
@@ -224,22 +225,36 @@ export default function AuditPlan() {
     return;
   }
 
-    const AuditPlanData = {
+  if (status === 'Completed') {
+  if (!actualDate) {
+    alert("Actual Date is required when status is Completed.");
+    return;
+  }
+  if (!completeDate) {
+    alert("Complete Date is required when status is Completed.");
+    return;
+  }
+}
+
+
+     const AuditPlanData = {
       auditId,
       auditType,
       standards,
       location,
       leadAuditor,
+      // auditorEmail: auditType === "Internal" ? auditorEmail : "",
       auditTeam: selectedAuditTeam,
       plannedDate,
       status,
-      actualDate,
-      completeDate,
+      ...(status === "Completed" && actualDate ? { actualDate } : {}),
+      ...(status === "Completed" && completeDate ? { completeDate } : {}),
       criteria,
       scope,
     };
     submitAuditPlanForm(AuditPlanData);
   };
+ 
 
   const handleCancel = () => {
     if (window.confirm("Are you sure you want to cancel filling the form?")) {
@@ -250,7 +265,7 @@ export default function AuditPlan() {
       setLeadAuditor('');
       setSelectedAuditTeam([]);
       setPlannedDate('');
-      setStatus('');
+      setStatus('Planned');
       setActualDate('');
       setCompleteDate('');
       setCriteria('');
@@ -369,7 +384,7 @@ export default function AuditPlan() {
                 {/* audit team */}
                 <div className="flex flex-col">
                   <label htmlFor="audit-team" className="text-medium font-medium text-gray-700">
-                    Audit Team <span className="text-red-500 text-xl mt-1">*</span>
+                    Audit Team 
                   </label>
                   <Select
                     isMulti
@@ -416,9 +431,6 @@ export default function AuditPlan() {
                     required
                     className="w-100 mt-2 py-3 px-3 rounded-lg bg-white border border-gray-400 text-gray-900 
                     font-semibold focus:border-orange-500 focus:outline-none">
-                    <option value="" disabled>
-                      Status
-                    </option>
                     <option value="Planned">Planned</option>
                     <option value="Executed">Executed</option>
                     <option value="Completed">Completed</option>
@@ -427,7 +439,7 @@ export default function AuditPlan() {
                 {/* actual date */}
                 <div className="flex flex-col">
                   <label htmlFor="actual-date" className="text-medium font-medium text-gray-700">
-                    Actual Date 
+                    Actual Date {status === 'Completed' && <span className="text-red-500">*</span>}
                   </label>
                   <input
                     type="date"
@@ -437,6 +449,7 @@ export default function AuditPlan() {
                     onChange={e => setActualDate(e.target.value)}
                     disabled={!isEditable.actualdate}
                     min={plannedDate || undefined}
+                    required={status === 'Completed'}
                     className="w-100 mt-2 py-3 px-3 rounded-lg bg-white border border-gray-400 text-gray-900 
                     font-semibold focus:border-orange-500 focus:outline-none"
                   />
@@ -444,16 +457,16 @@ export default function AuditPlan() {
                 {/* complete date */}
                 <div className="flex flex-col">
                   <label htmlFor="complete-date" className="text-medium font-medium text-gray-700">
-                    Complete Date <span className="text-red-500 text-xl mt-1">*</span>
+                    Complete Date {status === 'Completed' && <span className="text-red-500">*</span>}
                   </label>
                   <input
                     type="date"
                     name="completeDate"
                     id="complete-date"
                     value={completeDate}
-                    required
                     onChange={e => setCompleteDate(e.target.value)}
                     disabled={!isEditable.completedate}
+                    required={status === 'Completed'}
                     min={actualDate ? (new Date(actualDate) > new Date(plannedDate) ? actualDate : plannedDate) : plannedDate || undefined }
                       // If actualDate after plannedDate, use actualDate as min, else plannedDate (
                     className="w-100 mt-2 py-3 px-3 rounded-lg bg-white border border-gray-400 text-gray-900 
@@ -536,19 +549,27 @@ export default function AuditPlan() {
                     </div>
                   )}
                 </div>
-                {/* save button */}
-                <button
-                  type="submit"
-                  className="w-32 bg-orange-700 hover:bg-blue-dark text-white font-bold py-2 px-6 rounded-lg mt-10 
-                  hover:bg-orange-600 transition ease-in-out duration-300">
-                  Save
-                </button>
-                {/* cancel button */}
-                <button type="button" onClick={handleCancel}
-                  className="md:w-32 bg-orange-700 hover:bg-blue-dark text-white font-bold py-3 px-6 rounded-lg mt-10
-                  hover:bg-orange-600 transition ease-in-out duration-300">
-                  Cancel
-                </button>
+                <div className="flex space-x-4 mt-10">
+  <button
+    type="submit"
+    className="w-32 bg-orange-700 text-white font-bold py-2 px-6 rounded-lg
+    hover:bg-orange-600 transition ease-in-out duration-300"
+  >
+    Save
+  </button>
+ 
+  {/* cancel button */}
+  <button
+    type="button"
+    onClick={handleCancel}
+    className="w-32 bg-orange-700 text-white font-bold py-2 px-6 rounded-lg
+    hover:bg-orange-600 transition ease-in-out duration-300"
+  >
+    Cancel
+  </button>
+</div>
+ 
+ 
               </div>
             </form>
           </div>

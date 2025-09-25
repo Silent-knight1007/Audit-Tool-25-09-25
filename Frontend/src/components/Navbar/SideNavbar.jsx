@@ -12,11 +12,6 @@ export default function SidebarNavbar({ open, onClose }) {
 
   return (
     <>
-      {/* Overlay
-      <div
-        className={`fixed inset-0 bg-black bg-opacity-30 z-40 transition-opacity duration-300 ${open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
-        // onClick={onClose}
-      /> */}
       
       {/* Sidebar */}
       <nav
@@ -65,6 +60,7 @@ export default function SidebarNavbar({ open, onClose }) {
         Dashboard
       </NavLink>
     </li>
+
     {user?.role !== "user" && (
       <li>
         <NavLink
@@ -80,6 +76,7 @@ export default function SidebarNavbar({ open, onClose }) {
         </NavLink>
       </li>
     )}
+    
     <li>
       <NavLink
         to="/nonconformity"
@@ -141,7 +138,9 @@ export default function SidebarNavbar({ open, onClose }) {
               </ul>
             )}
           </li>
-          {user?.role !== "user" && (
+          {isAuthenticated &&(
+          <>
+          {(user?.role === "superadmin" ||  user?.role === "admin") && (
           <li>
             <NavLink
               to="/user-management"
@@ -156,6 +155,8 @@ export default function SidebarNavbar({ open, onClose }) {
             </NavLink>
           </li>
           )}
+          </>
+        )}
         </ul>
       </nav>
     </>

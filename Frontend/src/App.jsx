@@ -86,7 +86,7 @@ export default function App() {
                 />
                 <Route
                   path="/user-management"
-                  element={<ProtectedRoute allowedRoles={['admin', 'auditor', 'superadmin']}><AdminPanel /></ProtectedRoute>}
+                  element={<ProtectedRoute allowedRoles={['admin', 'superadmin']}><AdminPanel /></ProtectedRoute>}
                 />
                 <Route
                   path="/user/:userid"
@@ -95,7 +95,7 @@ export default function App() {
                 <Route path="/xyz" element={<ProtectedRoute allowedRoles={['admin', 'auditor', 'superadmin']}><AuditPlan /></ProtectedRoute>} />
                 <Route path="/abc" element={<ProtectedRoute allowedRoles={['admin', 'auditor', 'user', 'superadmin']}><NonConformity /></ProtectedRoute>} />
 
-                {/* Edit routes (Admin only) */}
+                {/* Edit routes (superadmin & Admin only) */}
                 <Route path="/edit/:id" element={<ProtectedRoute allowedRoles={['admin', 'superadmin']}><AuditPlan /></ProtectedRoute>} />
 
                 <Route path="/edit-audit/:id" element={<ProtectedRoute allowedRoles={['admin', 'auditor', 'superadmin']}><AuditPlan /></ProtectedRoute>} />

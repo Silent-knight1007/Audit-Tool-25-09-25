@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { debounce } from 'lodash';
 import AuthContext from "../../../Context/AuthContext";
-
+ 
 const AdvisoryTable = () => {
   const [advisories, setAdvisories] = useState([]);
   const [selectedIds, setSelectedIds] = useState([]);
@@ -12,16 +12,16 @@ const AdvisoryTable = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const { user } = useContext(AuthContext);
   const userRole = user?.role || 'user';
-
+ 
   // Open attachment preview
   const openViewer = (advisory) => {
     if (advisory.attachments && advisory.attachments.length > 0) {
       const file = advisory.attachments[0];
       const ext = file.name.split('.').pop().toLowerCase();
-
+ 
       const inlineViewable = ['pdf', 'png', 'jpg', 'jpeg'];
       const url = `http://localhost:5000/api/advisories/${advisory._id}/attachments/${file._id}`;
-
+ 
       if (inlineViewable.includes(ext)) {
         setModalUrl(url);
       } else {
@@ -29,41 +29,41 @@ const AdvisoryTable = () => {
       }
     }
   };
-
+ 
   const closeViewer = () => setModalUrl(null);
-
+ 
   useEffect(() => {
     fetchAdvisories();
   }, []);
-
+ 
   useEffect(() => {
     const delayedFetch = debounce(() => {
       fetchAdvisories(searchQuery);
     }, 300); // 300ms debounce
-
+ 
     delayedFetch();
-
+ 
     // Cleanup debounce on unmount or when searchQuery changes
     return delayedFetch.cancel;
   }, [searchQuery]);
-
+ 
   const fetchAdvisories = async (query = "") => {
     try {
-      const url = query 
-        ? `http://localhost:5000/api/advisories?q=${encodeURIComponent(query)}` 
+      const url = query
+        ? `http://localhost:5000/api/advisories?q=${encodeURIComponent(query)}`
         : 'http://localhost:5000/api/advisories';
-
+ 
       const response = await axios.get(url);
       setAdvisories(response.data);
     } catch (error) {
       console.error('Error fetching advisories:', error);
     }
   };
-
+ 
   const handleCreateNew = () => {
     navigate('/organisationdocuments/advisories/new');
   };
-
+ 
   const handleEditSelected = () => {
     if (selectedIds.length === 1) {
       navigate(`/organisationdocuments/advisories/${selectedIds[0]}`);
@@ -71,7 +71,7 @@ const AdvisoryTable = () => {
       alert("Please select exactly one advisory to edit.");
     }
   };
-
+ 
   const toggleSelect = (id) => {
     if (selectedIds.includes(id)) {
       setSelectedIds(selectedIds.filter(sid => sid !== id));
@@ -79,7 +79,7 @@ const AdvisoryTable = () => {
       setSelectedIds([...selectedIds, id]);
     }
   };
-
+ 
   const toggleSelectAll = () => {
     if (selectedIds.length === advisories.length) {
       setSelectedIds([]);
@@ -87,7 +87,7 @@ const AdvisoryTable = () => {
       setSelectedIds(advisories.map(a => a._id));
     }
   };
-
+ 
   const handleDeleteSelected = async () => {
     if (selectedIds.length === 0) return;
     if (!window.confirm(`Are you sure you want to delete ${selectedIds.length} selected advisory(ies)?`)) return;
@@ -107,18 +107,18 @@ const AdvisoryTable = () => {
       alert('Failed to delete selected advisories');
     }
   };
-
+ 
   const formatDate = (date) => {
     if (!date) return '—';
     const d = new Date(date);
     return isNaN(d) ? '—' : d.toLocaleDateString();
   };
-
+ 
   return (
     <div className="p-2 max-w-full">
       <h2 className="text-xl font-bold mr-10 mb-5 mt-5">Advisories</h2>
       <div className="flex gap-x-2 justify-left items-center mb-2">
-        {userRole === "admin" && (
+        {(userRole === 'admin' || userRole === 'superadmin') && (
           <button
             onClick={handleCreateNew}
             className="bg-red-600 hover:bg-orange-600 text-white font-bold text-xs py-2 px-4 rounded-lg mt-5 mb-5 transition ease-in-out duration-300"
@@ -126,8 +126,8 @@ const AdvisoryTable = () => {
             Add
           </button>
         )}
-
-        {userRole === "admin" && (
+ 
+        {(userRole === 'admin' || userRole === 'superadmin') && (
           <button
             onClick={handleEditSelected}
             disabled={selectedIds.length !== 1}
@@ -138,19 +138,19 @@ const AdvisoryTable = () => {
             Edit
           </button>
         )}
-        
-        {userRole === "admin" && (
+       
+        {(userRole === 'admin' || userRole === 'superadmin')&& (
           <button
             onClick={handleDeleteSelected}
-            title={userRole !== 'admin' ? 'You do not have permission to delete advisories' : ''}
-            disabled={selectedIds.length === 0 || userRole !== 'admin'}
+            title={(userRole !== 'admin' && userRole !== 'superadmin') ? 'You do not have permission to delete advisories' : ''}
+            disabled={selectedIds.length === 0 || (userRole !== 'admin' && userRole !== 'superadmin')}
             className={`px-4 py-2 rounded-lg font-bold text-white text-xs ${
-              selectedIds.length === 0 || userRole !== 'admin' ? 'bg-red-600 cursor-not-allowed' : 'hover:bg-orange-600'
+              selectedIds.length === 0 || (userRole !== 'admin' && userRole !== 'superadmin') ? 'bg-red-600 cursor-not-allowed' : 'hover:bg-orange-600'
             } transition`}>
             Delete
           </button>
         )}
-
+ 
     <input
           type="text"
           placeholder="Search advisories..."
@@ -159,19 +159,19 @@ const AdvisoryTable = () => {
           className="border p-2 rounded text-xs mr-2 mb-5 mt-5"
           style={{ width: '220px', height: '30px' }} // style as needed
         />
-
+ 
         <button
           onClick={() => fetchAdvisories(searchQuery)}
           className="bg-red-600 hover:bg-orange-600 text-white font-bold text-xs py-2 px-3 rounded-lg mb-5 mt-5">
           Search
         </button>
-
+ 
       </div>
-
+ 
       <table className="min-w-full border border-red-600 rounded text-sm">
         <thead className="bg-red-600">
           <tr>
-            {userRole === "admin" && (
+            {(userRole === 'admin' || userRole === 'superadmin') && (
               <th className="border p-2">
                 <input
                   type="checkbox"
@@ -188,14 +188,14 @@ const AdvisoryTable = () => {
         <tbody>
           {advisories.length === 0 ? (
             <tr>
-              <td colSpan={userRole === "admin" ? 4 : 3} className="p-4 text-center font-bold text-red-700">
+              <td colSpan={(userRole === 'admin' || userRole === 'superadmin')  ? 4 : 3} className="p-4 text-center font-bold text-red-700">
                 No Advisories Found.
               </td>
             </tr>
           ) : (
             advisories.map(advisory => (
               <tr key={advisory._id} className="hover:bg-red-50">
-                {userRole === "admin" && (
+                {(userRole === 'admin' || userRole === 'superadmin') && (
                   <td className="border p-2 text-center">
                     <input
                       type="checkbox"
@@ -222,7 +222,7 @@ const AdvisoryTable = () => {
           )}
         </tbody>
       </table>
-
+ 
       {modalUrl && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
           <div className="bg-white rounded-lg shadow-lg max-w-4xl w-full max-h-[90vh] relative p-4">
@@ -244,33 +244,5 @@ const AdvisoryTable = () => {
     </div>
   );
 };
-
+ 
 export default AdvisoryTable;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

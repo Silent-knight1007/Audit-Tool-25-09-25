@@ -30,7 +30,7 @@ const certificateSchema = new mongoose.Schema({
   },
 
   attachments: [attachmentSchema]
-}, { timestamps: true });
+}, { timestamps: true , required: true });
 
 const Certificate = mongoose.model('Certificate', certificateSchema);
 

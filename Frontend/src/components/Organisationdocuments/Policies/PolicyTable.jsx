@@ -36,19 +36,18 @@ const PolicyTable = () => {
     fetchPolicies();
   }, []);
 
-const fetchPolicies = async (query = '') => {
-  try {
-    const url = query
-      ? `http://localhost:5000/api/policies?q=${encodeURIComponent(query)}`
-      : 'http://localhost:5000/api/policies';
+  const fetchPolicies = async (query = '') => {
+    try {
+      const url = query
+        ? `http://localhost:5000/api/policies?q=${encodeURIComponent(query)}`
+        : 'http://localhost:5000/api/policies';
 
-    const response = await axios.get(url);
-    setPolicies(response.data);
-  } catch (error) {
-    console.error('Error fetching policies:', error);
-  }
-};
-
+      const response = await axios.get(url);
+      setPolicies(response.data);
+    } catch (error) {
+      console.error('Error fetching policies:', error);
+    }
+  };
 
   const handleSearchChange = (e) => {
     const val = e.target.value;
@@ -63,22 +62,25 @@ const fetchPolicies = async (query = '') => {
   };
 
   const handleCreateNew = () => {
-    if (userRole === 'admin') {
+    if (userRole === 'admin' || userRole === 'superadmin') {
       navigate('/organisationdocuments/policies/new');
     }
   };
 
   const handleEditSelected = () => {
-    if (selectedIds.length === 1 && userRole === 'admin') {
+    if (
+      selectedIds.length === 1 &&
+      (userRole === 'admin' || userRole === 'superadmin')
+    ) {
       navigate(`/organisationdocuments/policies/${selectedIds[0]}`);
     } else if (selectedIds.length !== 1) {
-      alert('Please select exactly one advisory to edit.');
+      alert('Please select exactly one policy to edit.');
     }
   };
 
   const toggleSelect = (id) => {
     if (selectedIds.includes(id)) {
-      setSelectedIds(selectedIds.filter(sid => sid !== id));
+      setSelectedIds(selectedIds.filter((sid) => sid !== id));
     } else {
       setSelectedIds([...selectedIds, id]);
     }
@@ -88,20 +90,29 @@ const fetchPolicies = async (query = '') => {
     if (selectedIds.length === policies.length) {
       setSelectedIds([]);
     } else {
-      setSelectedIds(policies.map(p => p._id));
+      setSelectedIds(policies.map((p) => p._id));
     }
   };
 
   const handleDeleteSelected = async () => {
-    if (selectedIds.length === 0 || userRole !== 'admin') return;
-    if (!window.confirm(`Are you sure you want to delete ${selectedIds.length} selected policy(s)?`)) return;
+    if (
+      selectedIds.length === 0 ||
+      (userRole !== 'admin' && userRole !== 'superadmin')
+    )
+      return;
+    if (
+      !window.confirm(
+        `Are you sure you want to delete ${selectedIds.length} selected policy(s)?`
+      )
+    )
+      return;
 
     try {
-      const response = await axios.delete('http://localhost:5000/api/policies', { 
-        data: { ids: selectedIds, role: userRole }
+      const response = await axios.delete('http://localhost:5000/api/policies', {
+        data: { ids: selectedIds, role: userRole },
       });
       const deletedIds = response.data.deletedIds || selectedIds;
-      setPolicies(prev => prev.filter(p => !deletedIds.includes(p._id)));
+      setPolicies((prev) => prev.filter((p) => !deletedIds.includes(p._id)));
       setSelectedIds([]);
       alert(response.data.message || 'Deleted successfully.');
     } catch (error) {
@@ -114,31 +125,37 @@ const fetchPolicies = async (query = '') => {
     <div className="p-2 max-w-full">
       <h2 className="text-xl font-bold mr-10 mb-5 mt-5">Policies</h2>
       <div className="flex gap-x-2 justify-left items-center mb-2">
-        {userRole === 'admin' && (
+        {(userRole === 'admin' || userRole === 'superadmin') && (
           <button
             onClick={handleCreateNew}
             className="bg-red-600 hover:bg-blue-dark text-white font-bold text-xs py-2 px-4 rounded-lg mt-5 mb-5 hover:bg-orange-600 transition ease-in-out duration-300"
           >
-            Add 
+            Add
           </button>
         )}
 
-        {userRole === 'admin' && (
+        {(userRole === 'admin' || userRole === 'superadmin') && (
           <button
             onClick={handleEditSelected}
             disabled={selectedIds.length !== 1}
             className={`px-4 py-2 rounded-lg font-bold text-white text-xs ${
-              selectedIds.length !== 1 ? 'bg-red-600 cursor-not-allowed' : 'bg-red-600 hover:bg-red-500'
+              selectedIds.length !== 1
+                ? 'bg-red-600 cursor-not-allowed'
+                : 'bg-red-600 hover:bg-red-500'
             } transition`}
           >
-             Edit 
+            Edit
           </button>
         )}
-        
-        {userRole === 'admin' && (
+
+        {(userRole === 'admin' || userRole === 'superadmin') && (
           <button
             onClick={handleDeleteSelected}
-            title={userRole !== 'admin' ? 'You do not have permission to delete Policy' : ''}
+            title={
+              userRole !== 'admin' && userRole !== 'superadmin'
+                ? 'You do not have permission to delete Policy'
+                : ''
+            }
             disabled={selectedIds.length === 0}
             className={`px-4 py-2 rounded-lg font-bold text-white text-xs ${
               selectedIds.length === 0 ? 'bg-red-600 cursor-not-allowed' : 'hover:bg-orange-600'
@@ -148,7 +165,7 @@ const fetchPolicies = async (query = '') => {
           </button>
         )}
 
-       <input
+        <input
           type="text"
           placeholder="Search Policies..."
           className="border p-2 rounded text-xs mb-5 mt-5"
@@ -157,7 +174,7 @@ const fetchPolicies = async (query = '') => {
           onChange={handleSearchChange}
         />
 
-         <button
+        <button
           onClick={() => fetchPolicies(searchQuery)}
           className="bg-red-600 hover:bg-orange-600 text-white font-bold text-xs mb-5 py-2 px-3 rounded-lg mt-5"
         >
@@ -168,7 +185,7 @@ const fetchPolicies = async (query = '') => {
       <table className="min-w-full border border-red-600 rounded text-sm">
         <thead className="bg-red-600">
           <tr>
-            {userRole === 'admin' && (
+            {(userRole === 'admin' || userRole === 'superadmin') && (
               <th className="border p-2">
                 <input
                   type="checkbox"
@@ -188,14 +205,14 @@ const fetchPolicies = async (query = '') => {
         <tbody>
           {policies.length === 0 ? (
             <tr>
-              <td colSpan={userRole === 'admin' ? 8 : 7} className="p-4 text-center font-bold text-red-700">
+              <td colSpan={(userRole === 'admin' || userRole === 'superadmin') ? 8 : 7} className="p-4 text-center font-bold text-red-700">
                 No Policies Found.
               </td>
             </tr>
           ) : (
-            policies.map(policy => (
+            policies.map((policy) => (
               <tr key={policy._id} className="hover:bg-red-50">
-                {userRole === 'admin' && (
+                {(userRole === 'admin' || userRole === 'superadmin') && (
                   <td className="border p-2 text-center">
                     <input
                       type="checkbox"
@@ -255,6 +272,3 @@ const fetchPolicies = async (query = '') => {
 };
 
 export default PolicyTable;
-
-
-

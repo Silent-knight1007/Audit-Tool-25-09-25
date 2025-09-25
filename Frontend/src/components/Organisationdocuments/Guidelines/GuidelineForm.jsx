@@ -37,7 +37,7 @@ const GuidelineForm = () => {
 
   const standardOptions = [
     { value: "ISO 9001 : 2015", label: "ISO 9001 : 2015" },
-    { value: "ISO 27001 : 2023", label: "ISO 27001 : 2023" },
+    { value: "ISO 27001 : 2022", label: "ISO 27001 : 2022" },
     { value: "ISO 27701 : 2019", label: "ISO 27701 : 2019" },
     { value: "ISO 22301 : 2019", label: "ISO 22301 : 2019" },
     { value: "ISO 27017 : 2015", label: "ISO 27017 : 2015" },

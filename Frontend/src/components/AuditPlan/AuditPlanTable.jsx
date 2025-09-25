@@ -84,7 +84,7 @@ const AuditTable = ({ selectedIds, setSelectedIds, audits }) => {
                 <td className="border p-2 text-xs">{audit.leadAuditor}</td>
                 <td className="border p-2 text-xs">{new Date(audit.plannedDate).toLocaleDateString()}</td>
                 <td className="border p-2 text-xs">{audit.status}</td>
-                <td className="border p-2 text-xs">{new Date(audit.actualDate).toLocaleDateString()}</td>
+                <td className="border p-2 text-xs">{formatDate(audit.actualDate)}</td>
                 <td className="border p-2 text-xs">{formatDate(audit.completeDate)}</td>
                 <td className="border p-2 text-xs">
                   {(audit.status === "Executed" || audit.status === "Completed") && (
@@ -92,7 +92,7 @@ const AuditTable = ({ selectedIds, setSelectedIds, audits }) => {
                       onClick={() => handleClick(audit.auditId, audit.actualDate)}
                       className="w-auto bg-red-500 hover:bg-orange-600 text-white font-bold text-xs py-1 px-1 rounded mt-2 mb-2 transition duration-200"
                     >
-                      Add NonConformity
+                      Add Non-Conformity
                     </button>
                   )}
                 </td>

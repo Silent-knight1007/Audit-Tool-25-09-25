@@ -23,9 +23,9 @@ const TemplateTable = () => {
       const url = `http://localhost:5000/api/templates/${template._id}/attachments/${file._id}`;
 
       if (inlineViewable.includes(ext)) {
-        setModalUrl(url); // Open modal popup with iframe
+        setModalUrl(url);
       } else {
-        window.location.href = url;  // Redirects in the same tab
+        window.location.href = url;
       }
     }
   };
@@ -40,7 +40,7 @@ const TemplateTable = () => {
   const fetchTemplates = async (searchQuery = '') => {
     console.log('Fetching templates for query:', searchQuery);
     try {
-      const url = searchQuery 
+      const url = searchQuery
         ? `http://localhost:5000/api/templates?q=${encodeURIComponent(searchQuery)}`
         : 'http://localhost:5000/api/templates';
 
@@ -48,35 +48,37 @@ const TemplateTable = () => {
       console.log('Response data:', response.data);
       setTemplates(response.data);
       setNoResults(response.data.length === 0);
-    } catch(error) {
+    } catch (error) {
       console.error('Error fetching templates:', error);
     }
   };
 
   const handleSearchChange = (e) => {
-  const val = e.target.value;
-  setSearchQuery(val);
-  fetchTemplates(val); // fetch immediately
-};
-
+    const val = e.target.value;
+    setSearchQuery(val);
+    fetchTemplates(val);
+  };
 
   const handleCreateNew = () => {
-    if (userRole === 'admin') {
+    if (userRole === 'admin' || userRole === 'superadmin') {
       navigate('/organisationdocuments/templates/new');
     }
   };
 
   const handleEditSelected = () => {
-    if (selectedIds.length === 1 && userRole === 'admin') {
+    if (
+      selectedIds.length === 1 &&
+      (userRole === 'admin' || userRole === 'superadmin')
+    ) {
       navigate(`/organisationdocuments/templates/${selectedIds[0]}`);
     } else if (selectedIds.length !== 1) {
-      alert("Please select exactly one advisory to edit.");
+      alert('Please select exactly one advisory to edit.');
     }
   };
 
   const toggleSelect = (id) => {
     if (selectedIds.includes(id)) {
-      setSelectedIds(selectedIds.filter(sid => sid !== id));
+      setSelectedIds(selectedIds.filter((sid) => sid !== id));
     } else {
       setSelectedIds([...selectedIds, id]);
     }
@@ -86,22 +88,31 @@ const TemplateTable = () => {
     if (selectedIds.length === templates.length) {
       setSelectedIds([]);
     } else {
-      setSelectedIds(templates.map(t => t._id));
+      setSelectedIds(templates.map((t) => t._id));
     }
   };
 
   const handleDeleteSelected = async () => {
-    if (selectedIds.length === 0 || userRole !== 'admin') return;
-    if (!window.confirm(`Are you sure you want to delete ${selectedIds.length} selected template(s)?`)) return;
+    if (
+      selectedIds.length === 0 ||
+      (userRole !== 'admin' && userRole !== 'superadmin')
+    )
+      return;
+    if (
+      !window.confirm(
+        `Are you sure you want to delete ${selectedIds.length} selected template(s)?`
+      )
+    )
+      return;
     try {
-      const response = await axios.delete('http://localhost:5000/api/templates', { 
-        data: { 
+      const response = await axios.delete('http://localhost:5000/api/templates', {
+        data: {
           ids: selectedIds,
           role: userRole,
-         }
-       });
+        },
+      });
       const deletedIds = response.data.deletedIds || selectedIds;
-      setTemplates(prev => prev.filter(t => !deletedIds.includes(t._id)));
+      setTemplates((prev) => prev.filter((t) => !deletedIds.includes(t._id)));
       setSelectedIds([]);
       alert(response.data.message || 'Deleted successfully.');
     } catch (error) {
@@ -120,8 +131,7 @@ const TemplateTable = () => {
     <div className="p-2 max-w-full">
       <h2 className="text-xl font-bold mr-10 mt-5 mb-5">Templates</h2>
       <div className="flex gap-x-2 justify-left items-center mb-2">
-
-        {userRole === 'admin' && (
+        {(userRole === 'admin' || userRole === 'superadmin') && (
           <button
             onClick={handleCreateNew}
             className="bg-red-600 hover:bg-blue-dark text-white font-bold text-xs py-2 px-4 rounded-lg mt-5 mb-5 hover:bg-orange-600 transition ease-in-out duration-300"
@@ -130,7 +140,7 @@ const TemplateTable = () => {
           </button>
         )}
 
-        {userRole === 'admin' && (
+        {(userRole === 'admin' || userRole === 'superadmin') && (
           <button
             onClick={handleEditSelected}
             disabled={selectedIds.length !== 1}
@@ -138,11 +148,11 @@ const TemplateTable = () => {
               selectedIds.length !== 1 ? 'bg-red-600 cursor-not-allowed' : 'bg-red-600 hover:bg-red-500'
             } transition`}
           >
-            Edit 
+            Edit
           </button>
         )}
 
-        {userRole === 'admin' && (
+        {(userRole === 'admin' || userRole === 'superadmin') && (
           <button
             onClick={handleDeleteSelected}
             title={userRole !== 'admin' ? 'You do not have permission to delete Template' : ''}
@@ -151,11 +161,11 @@ const TemplateTable = () => {
               selectedIds.length === 0 ? 'bg-red-600 cursor-not-allowed' : 'hover:bg-orange-600'
             } transition`}
           >
-            Delete 
+            Delete
           </button>
         )}
-        
-         <input
+
+        <input
           type="text"
           placeholder="Search Template..."
           className="border p-2 rounded text-xs mb-5 mt-5"
@@ -164,7 +174,7 @@ const TemplateTable = () => {
           onChange={handleSearchChange}
         />
 
-         <button
+        <button
           onClick={() => fetchTemplates(searchQuery)}
           className="bg-red-600 hover:bg-orange-600 text-white font-bold text-xs py-2 px-3 mb-5 rounded-lg mt-5"
         >
@@ -175,7 +185,7 @@ const TemplateTable = () => {
       <table className="min-w-full border border-red-600 rounded text-sm">
         <thead className="bg-red-600">
           <tr>
-            {userRole === 'admin' && (
+            {(userRole === 'admin' || userRole === 'superadmin') && (
               <th className="border p-2">
                 <input
                   type="checkbox"
@@ -200,9 +210,9 @@ const TemplateTable = () => {
               </td>
             </tr>
           ) : (
-            templates.map(template => (
+            templates.map((template) => (
               <tr key={template._id} className="hover:bg-red-50">
-                {userRole === 'admin' && (
+                {(userRole === 'admin' || userRole === 'superadmin') && (
                   <td className="border p-2 text-center">
                     <input
                       type="checkbox"
@@ -225,11 +235,15 @@ const TemplateTable = () => {
                     template.documentName || '—'
                   )}
                 </td>
-                <td className="border p-2 max-w-xs truncate" title={template.description}>{template.description || '—'}</td>
+                <td className="border p-2 max-w-xs truncate" title={template.description}>
+                  {template.description || '—'}
+                </td>
                 <td className="border p-2">{template.versionNumber || '—'}</td>
                 <td className="border p-2">{formatDate(template.releaseDate)}</td>
                 <td className="border p-2 text-xs">
-                  {Array.isArray(template.applicableStandard) && template.applicableStandard.length > 0 ? template.applicableStandard.join(', '): '—'}
+                  {Array.isArray(template.applicableStandard) && template.applicableStandard.length > 0
+                    ? template.applicableStandard.join(', ')
+                    : '—'}
                 </td>
               </tr>
             ))
@@ -260,6 +274,3 @@ const TemplateTable = () => {
 };
 
 export default TemplateTable;
-
-
-

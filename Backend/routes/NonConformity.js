@@ -191,7 +191,7 @@ router.delete('/:id', async (req, res) => {
     }
 
     if (userRole !== 'admin' && userRole !== 'auditor' && userRole !== 'superadmin') {
-      return res.status(403).json({ message: 'Forbidden: only admin or auditor can delete nonconformities' });
+      return res.status(403).json({ message: 'Forbidden: only superadmin, admin or auditor can delete nonconformities' });
     }
 
     const deleted = await NonConformity.findByIdAndDelete(id);

@@ -168,6 +168,7 @@ export default function NonConformity() {
         { value: "Dubai", label: "Dubai" },
         { value: "Singapore", label: "Singapore" },
         { value: "Gurgaon", label: "Gurgaon" },
+        { value: "Mumbai", label: "Mumbai" },
     ];
 
     const handleAttachmentsChange = (e) => {
@@ -543,6 +544,7 @@ export default function NonConformity() {
                                         options={ncLocationOptions}
                                         value={ncLocationOptions.filter(opt => nclocation.includes(opt.value))}
                                         onChange={selected => setNclocation(selected ? selected.map(opt => opt.value) : [])}
+                                        required
                                         isDisabled={!isEditable.location}
                                         className="w-100 mt-2 py-3 px-3 rounded-lg bg-white border border-gray-400 text-gray-900 
                                         font-semibold focus:border-orange-500 focus:outline-none"
@@ -554,13 +556,14 @@ export default function NonConformity() {
                                 {/* corrective action */}
                                 <div className="flex flex-col">
                                     <label htmlFor="ncCorrectiveAction" className="text-medium font-medium text-gray-700">
-                                        Corrective Action
+                                        Corrective Action <span className="text-red-500 text-xl mt-1">*</span>
                                     </label>
                                     <AutoResizeTextarea
                                         value={ncCorrectiveAction}
                                         onChange={e => setNcCorrectiveAction(e.target.value)}
                                         readOnly={!isEditable.CorrectiveAction}
                                         maxLength={1000}
+                                        required
                                         name="ncCorrectiveAction"
                                         id="ncCorrectiveAction"
                                         placeholder="Enter Corrective Action"
@@ -572,13 +575,14 @@ export default function NonConformity() {
                                 {/* preventive action */}
                                 <div className="flex flex-col">
                                     <label htmlFor="ncPreventiveAction" className="text-medium font-medium text-gray-700">
-                                        Preventive Action 
+                                        Preventive Action  <span className="text-red-500 text-xl mt-1">*</span>
                                     </label>
                                     <AutoResizeTextarea
                                         value={ncPreventiveAction}
                                         onChange={e => setNcPreventiveAction(e.target.value)}
                                         readOnly={!isEditable.preventiveAction}
                                         maxLength={1000}
+                                        required
                                         name="ncPreventiveAction"
                                         id="ncPreventiveAction"
                                         placeholder="Enter Preventive Action"
@@ -619,11 +623,7 @@ export default function NonConformity() {
                                         disabled={!isEditable.status}
                                         required
                                         className="w-100 mt-2 py-3 px-3 rounded-lg bg-white border border-gray-400 text-gray-900 
-                                        font-semibold focus:border-orange-500 focus:outline-none"
-                                    >
-                                        <option value="" disabled>
-                                            Status
-                                        </option>
+                                        font-semibold focus:border-orange-500 focus:outline-none">
                                         <option value="Open">Open</option>
                                         <option value="In Progress">In Progress</option>
                                         <option value="Fixed">Fixed</option>
@@ -674,24 +674,26 @@ export default function NonConformity() {
                                     )}
                                 </div>
 
+                                 
                                 {/* update button */}
-                                <button
-                                    type="submit"
-                                    disabled={isSubmitting}
-                                    className="w-32 bg-red-500 hover:bg-blue-dark text-white font-bold py-2 px-6 rounded-lg 
-                                    mt-10 hover:bg-orange-600 transition ease-in-out duration-300"
-                                >
-                                    {isSubmitting ? 'Saving...' : 'Save'}
-                                </button>
-
-                                {/* cancel button */}
-                                <button type="button" onClick={handleCancel}
-                                    className="md:w-32 bg-red-500 hover:bg-blue-dark text-white font-bold py-3 px-6 rounded-lg mt-10
-                                    hover:bg-orange-600 transition ease-in-out duration-300"
-                                >
-                                    Cancel
-                                </button>
-
+                                <div className="flex space-x-4 mt-10">
+                                    <button
+                                        type="submit"
+                                        disabled={isSubmitting}
+                                        className="w-32 bg-red-500 hover:bg-orange-600 text-white font-bold py-2 px-6 rounded-lg
+                                        transition ease-in-out duration-300">
+                                        {isSubmitting ? 'Saving...' : 'Save'}
+                                    </button>
+ 
+                                    <button
+                                        type="button"
+                                        onClick={handleCancel}
+                                        className="w-32 bg-red-500 hover:bg-orange-600 text-white font-bold py-2 px-6 rounded-lg
+                                        transition ease-in-out duration-300">
+                                        Cancel
+                                    </button>
+                                </div>
+ 
                             </div>
 
                             {formError && (

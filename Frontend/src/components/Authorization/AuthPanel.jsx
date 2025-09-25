@@ -58,7 +58,9 @@ export default function AuthPanel() {
 
         // ✅ Redirect based on role
         setTimeout(() => {
-          if (data.role === "admin") {
+          if(data.role === "superadmin"){
+            navigate("/user-management")
+          }else if (data.role === "admin") {
             navigate("/dashboard");
           } else if (data.role === "auditor") {
             navigate("/auditplan");

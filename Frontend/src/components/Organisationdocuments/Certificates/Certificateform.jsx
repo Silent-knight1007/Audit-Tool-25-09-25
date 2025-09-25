@@ -234,12 +234,15 @@ const CertificateForm = () => {
 
         {/* Attachments */}
         <div className="flex flex-col md:col-span-3 mt-4">
-          <label>Attachments</label>
+          <label>
+            Attachments <span className="text-red-500">*</span>
+            </label>
           <input
             type="file"
             multiple
             onChange={e => setSelectedFiles([...e.target.files])}
             className="mt-2 py-2 px-2 rounded-lg bg-white border border-gray-400"
+            required={!id}
           />
           {selectedFiles.length > 0 && (
             <ul className="text-sm mt-2">
